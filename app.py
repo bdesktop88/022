@@ -15,6 +15,8 @@ def verify_recaptcha(token):
         "response": token
     }
     r = requests.post(url, data=data)
+        print("reCAPTCHA response:", r.json())  # Add this line to debug
+
     return r.json()
 
 

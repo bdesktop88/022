@@ -7,4 +7,4 @@ services:
     startCommand: python app.py
     envVars:
       - key: RECAPTCHA_SECRET
-        value: your_recaptcha_secret_key
+        value: 6LcBjT4rAAAAANCGmLJtAqAiWaK2mxTENg93TI86

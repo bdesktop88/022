@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__, template_folder="templates")
 
-RECAPTCHA_SECRET = os.getenv("RECAPTCHA_SECRET", "your_recaptcha_secret_here")
+RECAPTCHA_SECRET = os.getenv("RECAPTCHA_SECRET", "6LcBjT4rAAAAANCGmLJtAqAiWaK2mxTENg93TI86")
 
 
 def verify_recaptcha(token):

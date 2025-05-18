@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: safe-links-full-app
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python app.py
+    envVars:
+      - key: RECAPTCHA_SECRET
+        value: your_recaptcha_secret_key

